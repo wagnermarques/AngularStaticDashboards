@@ -36,6 +36,9 @@ jobs:
         # Adjust base-href to match your repository name: /<repo-name>/
         run: npm run build -- --configuration production --base-href /AngularStaticDashboards/
 
+      - name: Debug Build Output
+        run: ls -R angular-app/dist/
+
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:

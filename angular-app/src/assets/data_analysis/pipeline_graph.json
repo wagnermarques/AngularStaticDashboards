@@ -1,0 +1,32 @@
+[
+  {
+    "id": "download",
+    "label": "Download Datasets",
+    "status": "completed"
+  },
+  {
+    "id": "extract",
+    "label": "Extract Zip Files",
+    "status": "completed"
+  },
+  {
+    "id": "dictionary",
+    "label": "Search Metadata",
+    "status": "completed"
+  },
+  {
+    "id": "process",
+    "label": "Process CSVs",
+    "status": "completed"
+  },
+  {
+    "id": "visualize",
+    "label": "Generate Visualization",
+    "status": "completed"
+  },
+  {
+    "id": "export",
+    "label": "Export Results",
+    "status": "pending"
+  }
+]

@@ -1,14 +1,14 @@
 [
   {
-    "year": "2021",
-    "student_count": 1350921
+    "year": 2021,
+    "student_count": 1350921.0
   },
   {
-    "year": "2022",
-    "student_count": 1527794
+    "year": 2022,
+    "student_count": 1527794.0
   },
   {
-    "year": "2023",
-    "student_count": 1771430
+    "year": 2023,
+    "student_count": 1771430.0
   }
 ]

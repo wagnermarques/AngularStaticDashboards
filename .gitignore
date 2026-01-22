@@ -1,0 +1,6 @@
+data-analysis/data/*.csv
+data-analysis/data/*.zip
+data-analysis/venv/
+node_modules/
+.angular/
+dist/

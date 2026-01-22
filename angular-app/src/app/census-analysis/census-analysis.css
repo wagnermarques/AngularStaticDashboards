@@ -1,0 +1,27 @@
+.container {
+  padding: 24px;
+}
+
+.header-card {
+  margin-bottom: 24px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.big-number {
+  font-size: 3em;
+  font-weight: bold;
+  text-align: center;
+  margin: 0;
+}
+
+.no-data {
+  text-align: center;
+  padding: 48px;
+  font-style: italic;
+}

@@ -1,0 +1,51 @@
+<div class="container" *ngIf="data.length > 0; else noData">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title><h1>Evolução de Alunos com Deficiência</h1></mat-card-title>
+      <mat-card-subtitle>Análise temporal baseada nos microdados do Censo Escolar (INEP)</mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+
+  <div class="stats-grid">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Total de Anos</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="big-number">{{ data.length }}</p>
+      </mat-card-content>
+    </mat-card>
+    <mat-card *ngIf="data.length > 0">
+      <mat-card-header>
+        <mat-card-title>Último Ano</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="big-number">{{ data[data.length - 1].year }}</p>
+      </mat-card-content>
+    </mat-card>
+    <mat-card *ngIf="data.length > 0">
+      <mat-card-header>
+        <mat-card-title>Total no Último Ano</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="big-number">{{ data[data.length - 1].student_count | number }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Gráfico Interativo (Plotly)</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <iframe *ngIf="plotlyChartUrl" [src]="plotlyChartUrl" style="width: 100%; height: 450px; border: none;"></iframe>
+    </mat-card-content>
+  </mat-card>
+
+</div>
+
+<ng-template #noData>
+  <div class="no-data">
+    <p>Carregando dados ou nenhum dado encontrado. Por favor certifique-se que o script Python foi executado e gerou os arquivos de dados.</p>
+  </div>
+</ng-template>

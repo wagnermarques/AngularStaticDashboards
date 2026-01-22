@@ -1,0 +1,87 @@
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, signal, WritableSignal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
+@Component({
+  selector: 'app-moodle-install-view',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+  ],
+  templateUrl: './moodle-install-view.html',
+  styleUrls: ['./moodle-install-view.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MoodleInstallView implements OnInit, OnDestroy {
+  installForm: FormGroup;
+  installationLog: WritableSignal<string> = signal('');
+  installing: WritableSignal<boolean> = signal(false);
+  adminPassVisible: WritableSignal<boolean> = signal(false);
+
+  constructor(private fb: FormBuilder, private snackBar: MatSnackBar) {
+    this.installForm = this.fb.group({
+      dbType: ['pgsql', Validators.required],
+      dbHost: ['fzl-postgresql', Validators.required],
+      dbName: ['moodle', Validators.required],
+      dbUser: ['postgres', Validators.required],
+      dbPass: ['1234', Validators.required],
+      dbPrefix: ['mdl_', Validators.required],
+      wwwroot: ['http://localhost/moodle', Validators.required],
+      adminUser: ['admin', Validators.required],
+      adminPass: ['SuaSenhaAdminForte', Validators.required],
+      adminEmail: ['wagnerdocri@gmail.com', [Validators.required, Validators.email]],
+      fullname: ['EtecZL PPPs', Validators.required],
+      shortname: ['EtecZL', Validators.required],
+      moodlePath: ['', Validators.required],
+      moodledataPath: ['', Validators.required],
+    });
+  }
+
+  async ngOnInit(): Promise<void> {
+    // Mocking home path retrieval
+    const homePath = "/home/mock";
+    this.installForm.patchValue({
+      moodlePath: `${homePath}/src-projects/var_www/html/moodle`,
+      moodledataPath: `${homePath}/src-projects/moodledata`,
+    });
+    console.log("Mocked FZLBPMS_HOME path set.");
+  }
+
+  ngOnDestroy(): void {
+    // No listener to clean up
+  }
+
+  toggleAdminPassVisibility(event: MouseEvent) {
+    event.preventDefault();
+    this.adminPassVisible.update(visible => !visible);
+  }
+
+  async onSubmit() {
+    if (this.installForm.valid) {
+      this.installing.set(true);
+      this.installationLog.set('');
+      try {
+        // Mocking installation
+        console.log('Mocking installation with config:', this.installForm.value);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        this.snackBar.open('Moodle installation completed successfully! (Mock)', 'Close', { duration: 3000 });
+      } catch (error) {
+        console.error('Installation failed:', error);
+        this.snackBar.open(`Installation failed: ${error}`, 'Close', { duration: 5000 });
+      } finally {
+        this.installing.set(false);
+      }
+    }
+  }
+}

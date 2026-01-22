@@ -102,8 +102,8 @@ export class ViewHome implements OnInit, AfterViewInit {
     if (!this.d3Container) return;
 
     const container = this.d3Container.nativeElement;
-    const width = container.offsetWidth || 800;
-    const height = 200;
+    const width = container.offsetWidth || 400;
+    const height = steps.length * 100; // Vertical height based on steps
 
     d3.select(container).selectAll('*').remove();
 
@@ -114,8 +114,8 @@ export class ViewHome implements OnInit, AfterViewInit {
 
     const nodes = steps.map((s, i) => ({ 
       ...s, 
-      x: (i + 1) * (width / (steps.length + 1)), 
-      y: height / 2 
+      x: width / 2, 
+      y: (i + 1) * 80 
     }));
     
     const links = [];
@@ -163,10 +163,11 @@ export class ViewHome implements OnInit, AfterViewInit {
       });
 
     nodeGroups.append('text')
-      .attr('dy', 45)
-      .attr('text-anchor', 'middle')
+      .attr('dx', 40)
+      .attr('dy', 5)
+      .attr('text-anchor', 'start')
       .attr('fill', '#333')
-      .attr('font-size', '12px')
+      .attr('font-size', '14px')
       .attr('font-weight', 'bold')
       .text(d => d.label);
   }

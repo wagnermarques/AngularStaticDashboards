@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import * as d3 from 'd3';
 
 interface PipelineStep {
@@ -19,15 +18,12 @@ interface PipelineStep {
 })
 export class PipelineView implements OnInit, AfterViewInit {
   private http = inject(HttpClient);
-  private sanitizer = inject(DomSanitizer);
 
   @ViewChild('d3Container') d3Container!: ElementRef;
 
   pipelineSteps = signal<PipelineStep[]>([]);
-  chartUrl = signal<SafeResourceUrl | null>(null);
 
   ngOnInit() {
-    this.loadChart();
   }
 
   ngAfterViewInit() {
@@ -117,12 +113,5 @@ export class PipelineView implements OnInit, AfterViewInit {
       .attr('font-size', '14px')
       .attr('font-weight', 'bold')
       .text(d => d.label);
-  }
-
-  loadChart() {
-    const timestamp = new Date().getTime();
-    this.chartUrl.set(
-      this.sanitizer.bypassSecurityTrustResourceUrl(`assets/data_analysis/student_count_by_year.html?t=${timestamp}`)
-    );
   }
 }

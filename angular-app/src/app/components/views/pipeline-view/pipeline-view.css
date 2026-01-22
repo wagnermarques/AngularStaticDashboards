@@ -3,7 +3,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
-.pipeline-section, .chart-section {
+.pipeline-section {
   margin-bottom: 40px;
   background: #fff;
   padding: 20px;
@@ -20,18 +20,4 @@
   align-items: flex-start;
   background: #fafafa;
   border-radius: 4px;
-}
-
-.chart-wrapper {
-  width: 100%;
-  min-height: 500px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.plotly-iframe {
-  width: 100%;
-  height: 500px;
-  border: none;
 }

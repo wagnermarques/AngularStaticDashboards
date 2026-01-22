@@ -1,4 +1,13 @@
 <div class="home-container">
-  <h1>Welcome to the GEPIS Dashboard</h1>
-  <p>Select an option from the menu to get started.</p>
+  <h1>Aggregated Results</h1>
+  
+  <section class="chart-section">
+    <div class="chart-wrapper">
+      @if (chartUrl()) {
+        <iframe [src]="chartUrl()" class="plotly-iframe"></iframe>
+      } @else {
+        <p>Loading chart...</p>
+      }
+    </div>
+  </section>
 </div>

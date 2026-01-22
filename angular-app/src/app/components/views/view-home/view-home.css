@@ -1,4 +1,26 @@
 .home-container {
   padding: 20px;
-  text-align: center;
+  font-family: 'Roboto', sans-serif;
+}
+
+.chart-section {
+  margin-bottom: 40px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-wrapper {
+  width: 100%;
+  min-height: 500px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.plotly-iframe {
+  width: 100%;
+  height: 500px;
+  border: none;
 }

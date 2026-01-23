@@ -1,6 +1,6 @@
 {
-  "name": "angular-app",
-  "short_name": "angular-app",
+  "name": "GEPIS Dados Abertos Dashboard",
+  "short_name": "GEPIS Dashboard",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

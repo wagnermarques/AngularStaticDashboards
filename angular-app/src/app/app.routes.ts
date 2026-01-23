@@ -4,10 +4,11 @@ import { ViewConfig } from './components/views/view-config/view-config';
 import { ViewBase }   from './components/views/view-base/view-base';
 
 import { PipelineView } from './components/views/pipeline-view/pipeline-view';
+import { DictionaryView } from './components/views/dictionary-view/dictionary-view';
+import { DuplicatesView } from './components/views/duplicates-view/duplicates-view';
+
 import { FzlbpmsContainersView } from './components/views/fzlbpms-containers-view/fzlbpms-containers-view';
-import { FzlbpmsContainersStacksView } from './components/views/fzlbpms-containers-stacks-view/fzlbpms-containers-stacks-view';
 import { DesktopHomeView } from './components/views/desktop-home-view/desktop-home-view'
-import { AppsHomeView } from './components/views/apps-home-view/apps-home-view';
 import { MoodleInstallView } from './components/views/moodle-install-view/moodle-install-view';
 
 
@@ -31,8 +32,12 @@ export const routes: Routes = [
         component: PipelineView
     },
     {
-        path:'appshomeview',
-        component: AppsHomeView
+        path:'dictionaryview',
+        component: DictionaryView
+    },
+    {
+        path:'duplicatesview',
+        component: DuplicatesView
     },
     {
         path: 'moodle-install',
@@ -46,9 +51,5 @@ export const routes: Routes = [
     {
         path:'fzlbpms-containers-vew',
         component: FzlbpmsContainersView
-    },
-    {
-        path:'fzlbpms-containers-stacks-view',
-        component: FzlbpmsContainersStacksView                   
     }
 ];

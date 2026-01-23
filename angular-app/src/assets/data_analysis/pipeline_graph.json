@@ -15,6 +15,11 @@
     "status": "completed"
   },
   {
+    "id": "sanitize",
+    "label": "Sanitize Data",
+    "status": "completed"
+  },
+  {
     "id": "process",
     "label": "Process CSVs",
     "status": "completed"

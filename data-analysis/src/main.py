@@ -14,7 +14,7 @@ from fzl_opendata_utils import (
     fzl_opendata_get_field_description
 )
 from fzl_excel_utils import read_excel_dictionary, find_field_description
-from fzl_statistics_utils import generate_bar_chart, export_to_json
+from fzl_statistics_utils import generate_interactive_dashboard, export_to_json
 from fzl_opendata_censoeducacaoinep import load_census_csv, aggregate_by_year
 
 
@@ -50,6 +50,7 @@ def main():
         os.makedirs(DATA_DIR)
     
     all_years_data = []
+    all_states_data = []
     field_description_text = None
 
     # Step 1: Download
@@ -103,60 +104,87 @@ def main():
                     csv_files.append(os.path.join(root, file))
         
         if csv_files:
-            # We load the full row to check duplicates based on dictionary fields
             # Clean variables from dictionary to match CSV headers
             clean_vars = [v.strip().upper() for v in variable_names]
-            
-            # For efficiency in this demo, we'll use a subset of the first 10 variables
-            # Todo: In production, use this vars wich can be indicate possible same person record
-            # DS_ENDERECO, DS_BAIRRO, NU_CEP, NU_TELEFONE, DS_EMAIL, CO_ENTIDADE(Código da Escola), CO_MUNICIPIO, CO_UF, TP_DEPENDENCIA_ADM, TP_LOCALIZACAO, DDD_TELEFONE, NU_DDD_CELULAR, NU_CELULAR
             cols_to_use = clean_vars[:10] if clean_vars else []
             
-            # Ensure NU_ANO_CENSO and FIELD_TO_ANALYZE are included
-            if 'NU_ANO_CENSO' not in cols_to_use: cols_to_use.append('NU_ANO_CENSO')
-            if FIELD_TO_ANALYZE not in cols_to_use: cols_to_use.append(FIELD_TO_ANALYZE)
+            # Ensure Essential Columns
+            required_cols = ['NU_ANO_CENSO', 'NO_UF', FIELD_TO_ANALYZE]
+            for c in required_cols:
+                if c not in cols_to_use: cols_to_use.append(c)
             
+            # Use 'CO_ENTIDADE' for deduplication if possible
+            if 'CO_ENTIDADE' in clean_vars and 'CO_ENTIDADE' not in cols_to_use:
+                cols_to_use.append('CO_ENTIDADE')
+
             df = load_census_csv(csv_files[0], columns=cols_to_use)
             if not df.empty:
                 dup_html_path = os.path.join(ANGULAR_ASSETS_DIR, f'duplicates_{year}.html')
-                # Use CO_ENTIDADE for meaningful duplicate detection in School Census
                 check_fields = ['CO_ENTIDADE'] if 'CO_ENTIDADE' in df.columns else cols_to_use[:3]
                 fzl_opendata_detect_duplicate_records(df, check_fields, dup_html_path, year)
                 
                 # 5) Process (Aggregation)
                 print(f">>>>>>>>>> 5) Process CSV Year {year} <<<<<<<<<<")
-                aggregated = aggregate_by_year(df, value_col=FIELD_TO_ANALYZE)
-                all_years_data.append(aggregated)
+                
+                # By Year
+                agg_year = aggregate_by_year(df, value_col=FIELD_TO_ANALYZE)
+                all_years_data.append(agg_year)
+                
+                # By State (NO_UF)
+                if 'NO_UF' in df.columns:
+                    # Convert to numeric first to ensure sum works
+                    df[FIELD_TO_ANALYZE] = pd.to_numeric(df[FIELD_TO_ANALYZE], errors='coerce').fillna(0)
+                    # Group by both UF and Year to allow clustering
+                    agg_state = df.groupby(['NO_UF', 'NU_ANO_CENSO'])[FIELD_TO_ANALYZE].sum().reset_index()
+                    all_states_data.append(agg_state)
         
         pipeline_steps[3]["status"] = "completed"
         pipeline_steps[4]["status"] = "completed"
 
     if all_years_data:
-        final_df = pd.concat(all_years_data).groupby('NU_ANO_CENSO')[FIELD_TO_ANALYZE].sum().reset_index()
+        # Final Aggregation
+        final_df_year = pd.concat(all_years_data).groupby('NU_ANO_CENSO')[FIELD_TO_ANALYZE].sum().reset_index()
+        
+        final_df_state = pd.DataFrame()
+        if all_states_data:
+            # Aggregate again just in case, keeping Year for clustering
+            final_df_state = pd.concat(all_states_data).groupby(['NO_UF', 'NU_ANO_CENSO'])[FIELD_TO_ANALYZE].sum().reset_index()
         
         # 6) Visualize
         print(f">>>>>>>>>> 6) Generate Visualization <<<<<<<<<<")
         chart_output = os.path.join(ANGULAR_ASSETS_DIR, 'student_count_by_year.html')
         
-        # Build title with description if available
         chart_title = f"Total Students: {FIELD_TO_ANALYZE}"
         if field_description_text:
             chart_title += f" - {field_description_text}"
         chart_title += " (INEP Census)"
         
-        generate_bar_chart(
-            final_df, 
-            x_col='NU_ANO_CENSO', 
-            y_col=FIELD_TO_ANALYZE, 
-            title=chart_title, 
-            output_html=chart_output
-        )
+        # Define views for the interactive dashboard
+        data_views = {
+            'Por Ano': {
+                'df': final_df_year,
+                'x_col': 'NU_ANO_CENSO',
+                'y_col': FIELD_TO_ANALYZE,
+                'x_label': 'Ano do Censo'
+            }
+        }
+        
+        if not final_df_state.empty:
+            data_views['Por Estado'] = {
+                'df': final_df_state,
+                'x_col': 'NO_UF',
+                'y_col': FIELD_TO_ANALYZE,
+                'x_label': 'Unidade da Federação',
+                'cluster_col': 'NU_ANO_CENSO' # Trigger clustered chart
+            }
+
+        generate_interactive_dashboard(data_views, chart_title, chart_output)
         pipeline_steps[5]["status"] = "completed"
         
         # 7) Export
         print(f">>>>>>>>>> 7) Export JSON <<<<<<<<<<")
         json_output = os.path.join(ANGULAR_ASSETS_DIR, 'summary_stats.json')
-        json_data = final_df.rename(columns={'NU_ANO_CENSO': 'year', FIELD_TO_ANALYZE: 'student_count'}).to_dict(orient='records')
+        json_data = final_df_year.rename(columns={'NU_ANO_CENSO': 'year', FIELD_TO_ANALYZE: 'student_count'}).to_dict(orient='records')
         export_to_json(json_data, json_output)
         
         graph_output = os.path.join(ANGULAR_ASSETS_DIR, 'pipeline_graph.json')

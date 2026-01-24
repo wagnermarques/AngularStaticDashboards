@@ -99,6 +99,40 @@ def fzl_opendata_list_fields_in_dictionary_excel_file(excel_path, output_html_pa
         traceback.print_exc()
         return []
 
+def fzl_opendata_get_field_description(excel_path, field_name):
+    """
+    Searches for a specific field description in the INEP dictionary excel.
+    """
+    try:
+        # Read with header at line 7 (index 6)
+        df_raw = pd.read_excel(excel_path, sheet_name=0, header=6)
+        
+        cols = df_raw.columns.tolist()
+        
+        name_col = next((c for c in cols if 'nome' in str(c).lower() and 'vari' in str(c).lower()), None)
+        desc_col = next((c for c in cols if 'desc' in str(c).lower() and 'vari' in str(c).lower()), None)
+        
+        if not name_col or not desc_col:
+            return None
+
+        # Start from data rows (skip 3 rows after header)
+        df_data = df_raw.iloc[3:].copy()
+        
+        # Clean and search
+        # Create a temporary normalized column for searching
+        search_series = df_data[name_col].astype(str).str.strip().str.upper()
+        target_name = str(field_name).strip().upper()
+        
+        match = df_data.loc[search_series == target_name]
+        
+        if not match.empty:
+            return match.iloc[0][desc_col]
+            
+        return None
+    except Exception as e:
+        print(f"Error searching dictionary description: {e}")
+        return None
+
 def fzl_opendata_detect_duplicate_records(df, fields_to_check, output_html_path, year_label):
     """
     Detect duplicate records based on a list of fields and log them in an html table.

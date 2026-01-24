@@ -10,7 +10,8 @@ from fzl_http_utils import download_file
 from fzl_opendata_utils import (
     extract_zip, 
     fzl_opendata_list_fields_in_dictionary_excel_file,
-    fzl_opendata_detect_duplicate_records
+    fzl_opendata_detect_duplicate_records,
+    fzl_opendata_get_field_description
 )
 from fzl_excel_utils import read_excel_dictionary, find_field_description
 from fzl_statistics_utils import generate_bar_chart, export_to_json
@@ -49,6 +50,7 @@ def main():
         os.makedirs(DATA_DIR)
     
     all_years_data = []
+    field_description_text = None
 
     # Step 1: Download
     print(f">>>>>>>>>> 1) Download data <<<<<<<<<<")
@@ -82,6 +84,14 @@ def main():
         if xlsx_files:
             dict_html_path = os.path.join(ANGULAR_ASSETS_DIR, f'dictionary_{year}.html')
             variable_names = fzl_opendata_list_fields_in_dictionary_excel_file(xlsx_files[0], dict_html_path)
+            
+            # Attempt to fetch description for the analyzed field (if not already found)
+            if not field_description_text:
+                desc = fzl_opendata_get_field_description(xlsx_files[0], FIELD_TO_ANALYZE)
+                if desc:
+                    field_description_text = desc
+                    print(f"Found description for {FIELD_TO_ANALYZE}: {field_description_text}")
+
         pipeline_steps[2]["status"] = "completed"
 
         # 4) Sanitize (Duplicate Detection)
@@ -127,11 +137,18 @@ def main():
         # 6) Visualize
         print(f">>>>>>>>>> 6) Generate Visualization <<<<<<<<<<")
         chart_output = os.path.join(ANGULAR_ASSETS_DIR, 'student_count_by_year.html')
+        
+        # Build title with description if available
+        chart_title = f"Total Students: {FIELD_TO_ANALYZE}"
+        if field_description_text:
+            chart_title += f" - {field_description_text}"
+        chart_title += " (INEP Census)"
+        
         generate_bar_chart(
             final_df, 
             x_col='NU_ANO_CENSO', 
             y_col=FIELD_TO_ANALYZE, 
-            title=f"Total Students: {FIELD_TO_ANALYZE} (INEP Census)", 
+            title=chart_title, 
             output_html=chart_output
         )
         pipeline_steps[5]["status"] = "completed"

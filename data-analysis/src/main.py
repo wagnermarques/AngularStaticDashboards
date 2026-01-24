@@ -5,6 +5,7 @@ import pandas as pd
 # Add current directory to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+
 from fzl_http_utils import download_file
 from fzl_opendata_utils import (
     extract_zip, 
@@ -14,6 +15,7 @@ from fzl_opendata_utils import (
 from fzl_excel_utils import read_excel_dictionary, find_field_description
 from fzl_statistics_utils import generate_bar_chart, export_to_json
 from fzl_opendata_censoeducacaoinep import load_census_csv, aggregate_by_year
+
 
 # Configuration
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data')
@@ -26,7 +28,8 @@ DOWNLOAD_URLS = {
     '2023': 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2023.zip'
 }
 
-FIELD_TO_ANALYZE = 'QT_MAT_ESP'
+FIELD_TO_ANALYZE = 'QT_MAT_ESP' #Número de Matrículas da Educação Especial
+
 
 def main():
     print("########## Starting Data Analysis Pipeline ##########")
@@ -45,7 +48,7 @@ def main():
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
     
-    all_year_data = []
+    all_years_data = []
 
     # Step 1: Download
     print(f">>>>>>>>>> 1) Download data <<<<<<<<<<")
@@ -94,7 +97,9 @@ def main():
             # Clean variables from dictionary to match CSV headers
             clean_vars = [v.strip().upper() for v in variable_names]
             
-            # For efficiency in this demo, we'll use a subset of the first 10 variables 
+            # For efficiency in this demo, we'll use a subset of the first 10 variables
+            # Todo: In production, use this vars wich can be indicate possible same person record
+            # DS_ENDERECO, DS_BAIRRO, NU_CEP, NU_TELEFONE, DS_EMAIL, CO_ENTIDADE(Código da Escola), CO_MUNICIPIO, CO_UF, TP_DEPENDENCIA_ADM, TP_LOCALIZACAO, DDD_TELEFONE, NU_DDD_CELULAR, NU_CELULAR
             cols_to_use = clean_vars[:10] if clean_vars else []
             
             # Ensure NU_ANO_CENSO and FIELD_TO_ANALYZE are included
@@ -111,13 +116,13 @@ def main():
                 # 5) Process (Aggregation)
                 print(f">>>>>>>>>> 5) Process CSV Year {year} <<<<<<<<<<")
                 aggregated = aggregate_by_year(df, value_col=FIELD_TO_ANALYZE)
-                all_year_data.append(aggregated)
+                all_years_data.append(aggregated)
         
         pipeline_steps[3]["status"] = "completed"
         pipeline_steps[4]["status"] = "completed"
 
-    if all_year_data:
-        final_df = pd.concat(all_year_data).groupby('NU_ANO_CENSO')[FIELD_TO_ANALYZE].sum().reset_index()
+    if all_years_data:
+        final_df = pd.concat(all_years_data).groupby('NU_ANO_CENSO')[FIELD_TO_ANALYZE].sum().reset_index()
         
         # 6) Visualize
         print(f">>>>>>>>>> 6) Generate Visualization <<<<<<<<<<")

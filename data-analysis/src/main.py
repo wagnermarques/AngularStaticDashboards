@@ -23,13 +23,17 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data'
 ANGULAR_ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../angular-app/src/assets/data_analysis')
 TEMP_EXTRACT_DIR = os.path.join(DATA_DIR, 'extracted')
 
+#https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-escolar
 DOWNLOAD_URLS = {
+    '2019': 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2019.zip',
+    '2020': 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2020.zip',
     '2021': 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2021.zip',
     '2022': 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2022.zip',
-    '2023': 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2023.zip'
+    '2023': 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2023.zip',
+    '2024': 'https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2024.zip'
 }
 
-FIELD_TO_ANALYZE = 'QT_MAT_ESP' #Número de Matrículas da Educação Especial
+FIELD_TO_ANALYZE = 'QT_MAT_ESP' #NÃºmero de MatrÃ­culas da EducaÃ§Ã£o Especial
 
 
 def main():
@@ -174,7 +178,7 @@ def main():
                 'df': final_df_state,
                 'x_col': 'NO_UF',
                 'y_col': FIELD_TO_ANALYZE,
-                'x_label': 'Unidade da Federação',
+                'x_label': 'Unidade da FederaÃ§Ã£o',
                 'cluster_col': 'NU_ANO_CENSO' # Trigger clustered chart
             }
 

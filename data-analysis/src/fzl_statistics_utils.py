@@ -22,7 +22,8 @@ def generate_bar_chart(df, x_col, y_col, title, output_html):
             title_text=title,
             xaxis_title=x_col,
             yaxis_title=y_col,
-            template="plotly_white"
+            template="plotly_white",
+            xaxis=dict(type='category')
         )
         
         plot_html = fig.to_html(full_html=False, include_plotlyjs='cdn')

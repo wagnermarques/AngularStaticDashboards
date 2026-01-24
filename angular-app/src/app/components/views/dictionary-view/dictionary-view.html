@@ -5,7 +5,7 @@
   </div>
 
   <div class="year-selector">
-    @for (year of years; track year) {
+    @for (year of years(); track year) {
       <button 
         class="year-btn" 
         [class.active]="selectedYear() === year"

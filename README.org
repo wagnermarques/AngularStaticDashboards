@@ -1,0 +1,13 @@
+#+Title: Gepis - Dados Abertos - Dashboard
+
+Este projeto é uma iniciativa do grupo gepis para inicio de atividades
+de consumo e reúso de dados abertos oficiais.
+
+Inicialmente os dados análisados são conjuntos de dados abertos do
+senso escolar do inep disponíveis em:
+https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-escolar
+
+
+Para acessar o aplicativo utilize o link
+https://wagnermarques.github.io/AngularStaticDashboards
+

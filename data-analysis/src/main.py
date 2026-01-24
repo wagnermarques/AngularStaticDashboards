@@ -195,6 +195,12 @@ def main():
         export_to_json(pipeline_steps, graph_output)
         pipeline_steps[6]["status"] = "completed"
         
+        # Export available years for frontend dropdowns
+        years_output = os.path.join(ANGULAR_ASSETS_DIR, 'available_years.json')
+        # Use sorted keys from processed years
+        processed_years = sorted(list(DOWNLOAD_URLS.keys()))
+        export_to_json(processed_years, years_output)
+        
         print("--- Pipeline Completed Successfully ---")
     else:
         print("No data was processed.")

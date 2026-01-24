@@ -81,7 +81,7 @@ def generate_bar_chart(df, x_col, y_col, title, output_html):
         table.table {{
             width: 100%;
             border-collapse: collapse;
-            text-align: left;
+            text-align: center;
         }}
         table.table th, table.table td {{
             padding: 12px 15px;
